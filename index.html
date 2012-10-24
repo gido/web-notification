@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Web notification experiment</title>
+</head>
+<body>
+    <h1>Web experimentation about Web Notification API</h1>
+    <p>
+        First you need to click on <button id="set-notification-permission">set web notification permission</button>
+        to allow web notification for this page.
+    </p>
+    <p>
+        <a id="notify" href="#">Notify me<a>
+    </p>
+    
+    <hr/>
+    <ul>
+        <li><a href="chrome://chrome/settings/contentExceptions#notifications">Paramètre de configuration de Chrome</a></li>
+    </ul>
+    
+    <script>
+        (function(notifications) {
+            
+            if (notifications) {
+                console.log("Notifications are supported. That's cool!");
+            }
+            else {
+                console.log("Notifications are not supported. Skipping...");
+                return;
+            }
+
+            document.querySelector("#set-notification-permission").addEventListener('click', function() {
+                if (notifications.checkPermission() !== 0) { // 0 is PERMISSION_ALLOWED
+                    notifications.requestPermission();
+                }
+            }, false);
+            
+            document.querySelector('#notify').addEventListener('click', function() {
+                var myNotification;
+                if (notifications.checkPermission() !== 0) {
+                    console.log("You are not allowed to display notification on this page. Did you click the 'set web notification permissions' button ?");
+                    
+                } else {
+                    myNotification = notifications.createNotification(
+                        'myicon.png',
+                        'This a cool notification',
+                        "Isn't it ? Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut."
+                    );
+
+                    myNotification.addEventListener('close', function() {
+                        console.log("closed.");
+                    });
+                    myNotification.addEventListener('display', function() {
+                        console.log("this is when the Notification is displayed...");
+                    });
+
+                    myNotification.show();
+                }
+            }, false);
+            
+        })(window.webkitNotifications);
+    </script>
+</body>
+</html>
